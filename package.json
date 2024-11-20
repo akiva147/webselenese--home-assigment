@@ -5,7 +5,7 @@
   },
   "name": "web-crawler",
   "version": "1.0.0",
-  "description": "A home assigment for position in webselenese",
+  "description": "A Home Assigment for Full Stack Developer position in webselenese",
   "main": "crawler.js",
   "devDependencies": {},
   "scripts": {

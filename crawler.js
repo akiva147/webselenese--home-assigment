@@ -1,30 +1,3 @@
-/**
-    The email description
-    Web Crawler Exercise
-    The goal of this exercise is to build a web crawler CLI. Please write the application in NodeJS.
-
-    The usage should be: 
-    node crawler.js <url: string> <depth: number>
-    Description:
-    Given a URL, the crawler will scan the webpage for any images, continue to every link inside that page and scan it as well. 
-    The crawling should stop once <depth> is reached. depth=3 means we can go as deep as 3 pages from the source URL (denoted by the <url> param), and depth=0 is just the first page. 
-
-    Results should be saved into a results.json file in the following format:
-    {
-        results: [
-            {
-                imageUrl: string,
-                sourceUrl: string // the page url this image was found on
-                depth: number // the depth of the source at which this image was found on
-            }
-        ]
-    }
-
-    Web crawler introduction can be found here: https://en.wikipedia.org/wiki/Web_crawler
-
-    Good luck!
- */
-
 // First, I will create a function to extract the CLI parameters: the URL and the depth.
 // Next, I will define global variables:
 // - A Set to store visited URLs and ensure no duplicates.
@@ -48,6 +21,12 @@ const fs = require("fs");
 const visitedUrls = new Set(); // To avoid re-crawling the same URL
 const results = []; // Array of the collected image data for later
 
+/**
+ * A recursive function that Extract images and links from the specified URL.
+ * @param {string} url - The starting URL.
+ * @param {number} maxDepth - The depth parameter passed from the cli.
+ * @param {number} currentDepth - The current depth.
+ */
 async function crawl(url, maxDepth, currentDepth = 0) {
   // Check if the currentDepth has exceeded maxDepth or if the url
   // is already in visitedUrls
@@ -95,11 +74,18 @@ async function crawl(url, maxDepth, currentDepth = 0) {
       await crawl(link, maxDepth, currentDepth + 1);
     }
   } catch (error) {
-    console.error("Error crawling " + url + ": " + error.message);
-    console.log("Error: ", error);
+    if (error.response && error.response.status === 404) {
+      console.error(`Error crawling ${url}: 404 Not Found`);
+    } else {
+      console.error(`Error crawling ${url}:`, error.message);
+    }
   }
 }
 
+/**
+ * The Main function for the file, get the cli parameters,
+ * calls the crawl function and create the json file from the results array.
+ */
 async function main() {
   const args = process.argv.slice(2);
 
